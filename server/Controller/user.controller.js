@@ -24,8 +24,8 @@ const savePreferences = async (req, res, next) => {
     }
 
     // ←– pull in the new fields
-    const { university, dept, program, yearOfStudy, dob } = req.body;
-    const update = { university, dept, program, yearOfStudy, dob };
+    const { university, dept, program, yearOfStudy, dob, contactNo } = req.body;
+    const update = { university, dept, program, yearOfStudy, dob, contactNo };
 
     const user = uid
       ? await User.findOneAndUpdate({ uid }, update, { new: true })

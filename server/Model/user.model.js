@@ -51,6 +51,10 @@ const UserSchema = new Schema(
       type: Date,
       required: false,
     },
+    contactNo: {
+      type: String,
+      required: false,
+    },
 
     wishlist: [
       {
