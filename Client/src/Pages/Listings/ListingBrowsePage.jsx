@@ -39,11 +39,18 @@ export default function ListingBrowsePage() {
     setLoading(true);
     setError("");
     try {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (!currentUser?._id) {
+        setError("User not logged in.");
+        setListings([]);
+        setLoading(false);
+        return;
+      }
+
       // Build query params for API call
       const params = {};
 
       if (searchTerm.trim() !== "") {
-        // We'll search by title or category using `q` param on backend
         params.q = searchTerm.trim();
       }
       if (categoryFilter) {
@@ -56,9 +63,12 @@ export default function ListingBrowsePage() {
         params.maxPrice = maxPrice;
       }
 
-      const { data } = await axios.get("http://localhost:4000/listings", {
-        params,
-      });
+      const { data } = await axios.get(
+        `http://localhost:4000/listings/${currentUser._id}`,
+        {
+          params,
+        }
+      );
 
       // Sort on frontend by price if needed
       let sortedData = data;

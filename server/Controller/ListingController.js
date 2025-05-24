@@ -80,9 +80,49 @@ exports.getListingById = async (req, res) => {
 // READ all listings - simple version (no filters)
 exports.getListings = async (req, res) => {
   try {
-    const listings = await Listing.find()
+    const { userId } = req.params;
+    const { q, category, minPrice, maxPrice } = req.query;
+
+    // Find user to get university
+    const user = await User.findById(userId).select("university");
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    const userUniversity = user.university;
+
+    // Build filters
+    const filter = {
+      $or: [
+        { visibility: "all" },
+        { visibility: "university", university: userUniversity },
+      ],
+    };
+
+    if (q) {
+      filter.$and = filter.$and || [];
+      filter.$and.push({
+        $or: [{ title: new RegExp(q, "i") }, { category: new RegExp(q, "i") }],
+      });
+    }
+
+    if (category) {
+      filter.$and = filter.$and || [];
+      filter.$and.push({ category });
+    }
+
+    if (minPrice) {
+      filter.$and = filter.$and || [];
+      filter.$and.push({ price: { $gte: Number(minPrice) } });
+    }
+
+    if (maxPrice) {
+      filter.$and = filter.$and || [];
+      filter.$and.push({ price: { $lte: Number(maxPrice) } });
+    }
+
+    const listings = await Listing.find(filter)
       .sort({ createdAt: -1 })
-      .populate("offers.user", "username email"); // optional populate
+      .populate("offers.user", "username email");
+
     res.json(listings);
   } catch (err) {
     console.error("❌ getListings error:", err);

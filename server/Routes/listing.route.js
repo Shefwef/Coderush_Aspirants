@@ -6,7 +6,7 @@ const { createListing, updateListing, deleteListing } = ListingController;
 const { verifyToken } = require("../middleware/jwt"); // <-- You must have a JWT middleware
 
 // Public
-router.get("/", ListingController.getListings);
+router.get("/:userId", ListingController.getListings);
 router.get("/:id", ListingController.getListingById);
 
 // Protected (must be logged in)
