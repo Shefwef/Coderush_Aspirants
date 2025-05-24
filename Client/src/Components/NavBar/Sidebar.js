@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import StorefrontIcon from "@mui/icons-material/Storefront";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import {
   Box,
   IconButton,
@@ -21,11 +19,13 @@ import {
   AccountCircle as ProfileIcon,
   ArrowForwardIos as ArrowForwardIosIcon,
   ArrowBackIos as ArrowBackIosIcon,
+  Storefront as StorefrontIcon,
+  AddCircleOutline as AddCircleOutlineIcon,
 } from "@mui/icons-material";
-import logo from "./images/logo2.png";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import MessageModal from "../MessageModal/MessageModal";
+import logo from "./images/logo.png";
 
 const Sidebar = ({ title }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -37,9 +37,7 @@ const Sidebar = ({ title }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
 
-  const handleToggle = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  const handleToggle = () => setIsCollapsed(!isCollapsed);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -53,20 +51,17 @@ const Sidebar = ({ title }) => {
     navigate("/login");
   };
 
-  const handleLogin = () => {
-    navigate("/login");
-  };
+  const handleLogin = () => navigate("/login");
 
   const handleRestrictedNavigation = (path) => {
     if (currentUser) {
       navigate(path);
     } else {
-      setIsModalOpen(true); // Show the login modal if not logged in
+      setIsModalOpen(true);
     }
   };
 
   useEffect(() => {
-    // Validate user on page load
     const token = localStorage.getItem("token");
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
 
@@ -89,50 +84,18 @@ const Sidebar = ({ title }) => {
         position: "fixed",
         top: 0,
         left: 0,
-        width: isCollapsed ? "70px" : "250px",
-        height: "100%",
-        backgroundColor: "#004d6d",
+        width: isCollapsed ? "90px" : "250px",
+        height: "100vh",
+        backgroundColor: "#002a45",
         color: "#fff",
         display: "flex",
-        minHeight: "display",
         flexDirection: "column",
         justifyContent: "space-between",
-        zIndex: 10,
-        transition: "width 0.3s ease, transform 0.3s ease",
+        zIndex: 1100,
+        transition: "width 0.3s ease",
+        overflow: "hidden",
       }}
     >
-      {/* Sidebar Content */}
-      <Box
-        sx={{
-          marginTop: "10vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <img
-          src={logo}
-          alt="Logo"
-          style={{
-            width: "40px",
-            borderRadius: "50%",
-            cursor: "pointer",
-          }}
-          onClick={() => navigate("/")}
-        />
-
-        {/* Title */}
-        {!isCollapsed && (
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: "bold", fontSize: "20px" }}
-          >
-            {title || "Whiskers-n-Co"}
-          </Typography>
-        )}
-      </Box>
-
       {/* Toggle Button */}
       <IconButton
         onClick={handleToggle}
@@ -140,31 +103,57 @@ const Sidebar = ({ title }) => {
           position: "absolute",
           top: 20,
           right: -20,
-          zIndex: 15,
-          backgroundColor: "#004d6d",
+          backgroundColor: "#002a45",
           color: "#fff",
+          zIndex: 15,
         }}
       >
         {isCollapsed ? <ArrowForwardIosIcon /> : <ArrowBackIosIcon />}
       </IconButton>
 
-      {/* Top Section */}
+      {/* Logo */}
       <Box
         sx={{
-          paddingTop: "20px",
-          overflowY: "auto", // Vertical scroll only when expanded
-          overflowX: "hidden", // No horizontal scroll
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          p: 2,
+          borderBottom: "1px solid #004866",
+          height: "100px",
+        }}
+      >
+        <img
+          src={logo}
+          alt="Logo"
+          style={{
+            width: "80px",
+            height: "80px",
+            borderRadius: "50%",
+            cursor: "pointer",
+            boxShadow: "0 4px 8px rgba(255, 255, 255, 0.1)",
+            transition: "transform 0.3s ease",
+            "&:hover": {
+              transform: "scale(1.05)",
+            },
+          }}
+          onClick={() => navigate("/")}
+        />
+      </Box>
+
+      {/* Navigation Area */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: isCollapsed ? "hidden" : "auto",
+          overflowX: "hidden",
+          mt: 1,
+          px: 1,
           "&::-webkit-scrollbar": {
-            width: "8px", // Width of the scrollbar
-            backgroundColor: "#004d6d", // Midnight blue background of the scrollbar
+            width: isCollapsed ? "0px" : "8px",
           },
           "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#fff", // White scrollbar thumb (the draggable part)
-            borderRadius: "4px", // Rounded edges for the thumb
-            border: "2px solid #004d6d", // Padding effect for thumb
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "#e0e0e0", // Slightly lighter on hover
+            backgroundColor: "#ccc",
+            borderRadius: "4px",
           },
         }}
       >
@@ -173,138 +162,168 @@ const Sidebar = ({ title }) => {
             sx={{
               display: "flex",
               alignItems: "center",
-              padding: "10px",
-              backgroundColor: "#005d7f",
-              borderRadius: "5px",
-              marginBottom: "20px",
+              p: 1,
+              borderRadius: 2,
+              backgroundColor: "#004d6d",
+              mb: 2,
             }}
           >
             <Avatar
               src={currentUser.img || ""}
-              alt={currentUser.username || "User"}
-              sx={{
-                width: "50px",
-                height: "50px",
-                marginRight: "10px",
-                cursor: "pointer",
-              }}
+              alt="User"
+              sx={{ width: 48, height: 48, mr: 1 }}
               onClick={() => navigate("/profile")}
             />
             {!isCollapsed && (
-              <Typography sx={{ fontWeight: "bold" }}>
-                {currentUser.username || "User"}
-              </Typography>
+              <Typography fontWeight="bold">{currentUser.username}</Typography>
             )}
           </Box>
         )}
 
-        {/* Navigation Links */}
-        <Box sx={{ padding: "10px" }}>
-          {[
-            { label: "Home", icon: <HomeIcon />, path: "/" },
-            { label: "Wishlist", icon: <WishlistIcon />, path: "/wishlist" },
-            { label: "My Pets", icon: <ProfileIcon />, path: "/mypets" },
-            {
-              label: "Give a Pet",
-              icon: <VolunteerActivismIcon />,
-              path: "/post-pet",
-            },
-            { label: "Find Pets", icon: <PetsIcon />, path: "/pets" },
-            {
-              label: "Train Pets",
-              icon: <FitnessCenterIcon />,
-              path: "/trainpets",
-            },
-            { label: "Find Vets", icon: <VetsIcon />, path: "/nearby-vets" },
-
-            // New Listings buttons
-            {
-              label: "Browse Listings",
-              icon: <StorefrontIcon />,
-              path: "/listings",
-            },
-            {
-              label: "Create Listing",
-              icon: <AddCircleOutlineIcon />,
-              path: "/listings/create",
-            },
-          ].map((item) => (
-            <Tooltip key={item.label} title={item.label}>
+        {[
+          { label: "Home", icon: <HomeIcon />, path: "/" },
+          { label: "Wishlist", icon: <WishlistIcon />, path: "/wishlist" },
+          { label: "My Pets", icon: <ProfileIcon />, path: "/mypets" },
+          {
+            label: "Give a Pet",
+            icon: <VolunteerActivismIcon />,
+            path: "/post-pet",
+          },
+          { label: "Find Pets", icon: <PetsIcon />, path: "/pets" },
+          {
+            label: "Train Pets",
+            icon: <FitnessCenterIcon />,
+            path: "/trainpets",
+          },
+          { label: "Find Vets", icon: <VetsIcon />, path: "/nearby-vets" },
+          {
+            label: "Browse Listings",
+            icon: <StorefrontIcon />,
+            path: "/listings",
+          },
+          {
+            label: "Create Listing",
+            icon: <AddCircleOutlineIcon />,
+            path: "/listings/create",
+          },
+        ].map((item) => (
+          <Tooltip title={item.label} key={item.label} placement="right">
+            <Box
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                p: 1.5,
+                borderRadius: 2,
+                mb: 1,
+                backgroundColor:
+                  location.pathname === item.path ? "#005580" : "#003954",
+                "&:hover": {
+                  backgroundColor: "#004d6d",
+                },
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => handleRestrictedNavigation(item.path)}
+            >
               <Box
                 sx={{
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  color: "#fff",
                   display: "flex",
                   alignItems: "center",
-                  padding: "10px",
-                  marginBottom: "10px",
-                  borderRadius: "5px",
-                  backgroundColor:
-                    location.pathname === item.path ? "#19275c" : "#005d7f",
-                  transition: "all 0.3s",
+                  justifyContent: isCollapsed ? "center" : "flex-start",
+                  width: "100%",
                 }}
-                onClick={() => handleRestrictedNavigation(item.path)}
               >
-                {item.icon}
+                <Box
+                  sx={{
+                    minWidth: isCollapsed ? "auto" : "40px",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  {item.icon}
+                </Box>
                 {!isCollapsed && (
-                  <Typography sx={{ marginLeft: "10px" }}>
-                    {item.label}
-                  </Typography>
+                  <Typography sx={{ ml: 2 }}>{item.label}</Typography>
                 )}
               </Box>
-            </Tooltip>
-          ))}
-        </Box>
+            </Box>
+          </Tooltip>
+        ))}
       </Box>
 
       {/* Bottom Section */}
-      <Box sx={{ padding: "10px" }}>
-        {!currentUser && (
+      <Box sx={{ p: 1 }}>
+        {!currentUser ? (
           <Box
             sx={{
-              textDecoration: "none",
-              color: "#fff",
+              cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "5px",
-              backgroundColor: "#005d7f",
-              transition: "all 0.3s",
+              p: 1.5,
+              borderRadius: 2,
+              backgroundColor: "#004d6d",
+              "&:hover": { backgroundColor: "#005d7f" },
+              transition: "all 0.3s ease",
             }}
             onClick={handleLogin}
           >
-            <LoginIcon />
-            {!isCollapsed && (
-              <Typography sx={{ marginLeft: "10px" }}>Login</Typography>
-            )}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: isCollapsed ? "center" : "flex-start",
+                width: "100%",
+              }}
+            >
+              <Box
+                sx={{
+                  minWidth: isCollapsed ? "auto" : "40px",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <LoginIcon />
+              </Box>
+              {!isCollapsed && <Typography sx={{ ml: 2 }}>Login</Typography>}
+            </Box>
           </Box>
-        )}
-        {currentUser && (
+        ) : (
           <Box
             sx={{
-              textDecoration: "none",
-              color: "#fff",
+              cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              padding: "10px",
-              marginTop: "10px",
-              borderRadius: "5px",
-              backgroundColor: "#005d7f",
-              transition: "all 0.3s",
+              p: 1.5,
+              borderRadius: 2,
+              backgroundColor: "#004d6d",
+              "&:hover": { backgroundColor: "#005d7f" },
+              transition: "all 0.3s ease",
             }}
             onClick={handleLogout}
           >
-            <LogoutIcon />
-            {!isCollapsed && (
-              <Typography sx={{ marginLeft: "10px" }}>Logout</Typography>
-            )}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: isCollapsed ? "center" : "flex-start",
+                width: "100%",
+              }}
+            >
+              <Box
+                sx={{
+                  minWidth: isCollapsed ? "auto" : "40px",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <LogoutIcon />
+              </Box>
+              {!isCollapsed && <Typography sx={{ ml: 2 }}>Logout</Typography>}
+            </Box>
           </Box>
         )}
       </Box>
 
-      {/* Snackbar for Login Message */}
       <Snackbar
         open={openSnackbar}
         message="Please log in to access this page"
