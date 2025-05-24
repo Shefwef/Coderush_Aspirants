@@ -16,44 +16,41 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: function () {
-        return !this.uid; // Require password only if `uid` is not present
+        return !this.uid;
       },
     },
-    img: {
-      type: String,
-      required: false,
-    },
-    desc: {
-      type: String,
-      required: false,
-    },
-    petTypes: {
-      type: [String],
-      required: false,
-    },
-    areas: {
-      type: [String],
-      required: false,
-      enum: [
-        "Barishal",
-        "Chattogram",
-        "Dhaka",
-        "Khulna",
-        "Mymensingh",
-        "Rajshahi",
-        "Rangpur",
-        "Sylhet",
-      ],
-    },
+    img: String,
+    desc: String,
     uid: {
       type: String,
-      required: false, // Optional, only for Google users
-      unique: true, // Ensure uniqueness for Google users
+      unique: true,
+      sparse: true,
     },
+
+    // ←– remove petTypes and areas here
+
+    // ←– add these
+    dept: {
+      type: String,
+      required: true,
+    },
+    program: {
+      type: String,
+      required: true,
+    },
+    yearOfStudy: {
+      type: Number,
+      required: true,
+    },
+    dob: {
+      type: Date,
+      required: true,
+    },
+
     wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Pet", // Assuming you have a Pet model
+        ref: "Pet",
       },
     ],
     blockedBy: [
