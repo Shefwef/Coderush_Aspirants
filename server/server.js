@@ -21,6 +21,7 @@ const path = require("path");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const createError = require("./utils/createError");
+const adminuserroutes = require("./Routes/adminuserroute");
 
 const app = express();
 
@@ -58,7 +59,7 @@ app.use("/chats", communicationRouter);
 app.use("/messages", msgRouter);
 app.use("/api", newsRoutes);
 app.use("/notifications", notifyroutes);
-
+app.use("/adminuser", adminuserroutes);
 mongoose
   .connect(process.env.MONGODB_URI, {})
   .then(() => {

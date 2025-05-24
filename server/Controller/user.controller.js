@@ -19,17 +19,20 @@ const savePreferences = async (req, res, next) => {
   try {
     const userId = req.userId;
     const uid = req.uid;
+
     if (!userId && !uid) {
       return res.status(403).send("User ID not found. Please log in again.");
     }
 
-    // ←– pull in the new fields
-    const { university, dept, program, yearOfStudy, dob, contactNo } = req.body;
-    const update = { university, dept, program, yearOfStudy, dob, contactNo };
+    const { petTypes, areas } = req.body;
 
     const user = uid
-      ? await User.findOneAndUpdate({ uid }, update, { new: true })
-      : await User.findByIdAndUpdate(userId, update, { new: true });
+      ? await User.findOneAndUpdate({ uid }, { petTypes, areas }, { new: true })
+      : await User.findByIdAndUpdate(
+          userId,
+          { petTypes, areas },
+          { new: true }
+        );
 
     if (!user) return res.status(404).send("User not found.");
     res.status(200).send("Preferences saved successfully.");
@@ -159,6 +162,22 @@ const unblockUser = async (req, res) => {
   }
 };
 
+// Fetch all users
+const getAllUsers = async (req, res, next) => {
+  try {
+    // Fetch all users from the database
+    const users = await User.find();
+
+    if (!users || users.length === 0) {
+      return res.status(404).send("No users found.");
+    }
+
+    res.status(200).json(users); // Return all users as a JSON response
+  } catch (err) {
+    next(err); // Handle any errors that occur during the fetch
+  }
+};
+
 // Export the functions
 module.exports = {
   deleteUser,
@@ -168,4 +187,5 @@ module.exports = {
   addToWishlist,
   getBlockedUser,
   unblockUser,
+  getAllUsers,
 };
