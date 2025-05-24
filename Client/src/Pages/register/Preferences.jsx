@@ -22,6 +22,7 @@ const Preferences = () => {
     program: "",
     yearOfStudy: "",
     dob: "",
+    contactNo: "", // added contactNo here
   });
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -166,6 +167,17 @@ const Preferences = () => {
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={preferences.dob}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            {/* Contact Number (optional) */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Contact Number"
+                name="contactNo"
+                value={preferences.contactNo}
                 onChange={handleChange}
               />
             </Grid>
