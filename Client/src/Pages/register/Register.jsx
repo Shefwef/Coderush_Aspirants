@@ -1,23 +1,17 @@
 import React, { useState } from "react";
 import {
   Grid,
-  Container,
-  Box,
-  TextField,
   Typography,
+  TextField,
   Button,
   CircularProgress,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import upload from "../../utils/upload";
 import newRequest from "../../utils/newRequest";
 import { useNavigate } from "react-router-dom";
 import { auth, provider, signInWithPopup } from "../../firebase";
-import { styled } from "@mui/material";
 import image from "./signup.jpeg";
-import { Height } from "@mui/icons-material";
 
 const theme = createTheme({
   palette: {
@@ -42,6 +36,8 @@ const theme = createTheme({
   },
 });
 
+const validDomains = ["@iut-dhaka.edu", "@du.ac.edu", "@buet.ac.edu"];
+
 const Register = () => {
   const [file, setFile] = useState(null);
   const [user, setUser] = useState({ username: "", email: "", password: "" });
@@ -50,18 +46,20 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const universityDomain = "@iut-dhaka.edu";
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setUser((prev) => ({ ...prev, [name]: value }));
 
     if (name === "email") {
-      // Basic email format check + domain check
-      if (!value.includes("@") || !value.endsWith(universityDomain)) {
+      const isValidDomain = validDomains.some((domain) =>
+        value.endsWith(domain)
+      );
+      if (!value.includes("@") || !isValidDomain) {
         setEmailError(
-          `Please enter a valid university email ending with ${universityDomain}`
+          `Please enter a valid university email ending with one of: ${validDomains.join(
+            ", "
+          )}`
         );
       } else {
         setEmailError("");
@@ -97,8 +95,15 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user.email.includes("@")) {
-      setEmailError("Please enter a valid email.");
+    const isValidDomain = validDomains.some((domain) =>
+      user.email.endsWith(domain)
+    );
+    if (!user.email.includes("@") || !isValidDomain) {
+      setEmailError(
+        `Please enter a valid university email ending with one of: ${validDomains.join(
+          ", "
+        )}`
+      );
       return;
     }
     setEmailError("");
@@ -249,8 +254,7 @@ const Register = () => {
             style={{
               display: "flex",
               width: "500px",
-              Height: "500px",
-              position: "center",
+              height: "500px",
               cursor: "pointer",
             }}
           />
