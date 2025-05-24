@@ -45,7 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(petRouter);
-app.use("/api/listings", listingRoutes);
+app.use("/listings", listingRoutes);
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/api/vets", vetRouter);

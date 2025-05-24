@@ -1,8 +1,15 @@
-const Listing = require("../Model/Listing");
+// controllers/ListingController.js
+const Listing = require("../Model/listing.model");
+const User = require("../Model/user.model");
 
-// CREATE
 exports.createListing = async (req, res) => {
+  const { userId } = req.params;
+
   try {
+    // Find user by userId param
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found." });
+
     const {
       type,
       title,
@@ -13,9 +20,22 @@ exports.createListing = async (req, res) => {
       priceType,
       visibility,
       condition,
+      biddingEndDate,
+      minBidIncrement,
     } = req.body;
 
-    // Optionally, add image upload handling if using Multer
+    if (!images?.length) {
+      return res
+        .status(400)
+        .json({ message: "At least one image is required." });
+    }
+
+    if (priceType === "bidding" && (!biddingEndDate || !minBidIncrement)) {
+      return res.status(400).json({
+        message: "Bidding end-date and minimum increment are required.",
+      });
+    }
+
     const listing = new Listing({
       type,
       title,
@@ -24,76 +44,65 @@ exports.createListing = async (req, res) => {
       category,
       price,
       priceType,
-      seller: req.user.id, // set by JWT auth middleware
-      university: req.user.university,
+      seller: user.email, // get email from DB user
+      university: user.university, // get university from DB user
       visibility,
       condition,
+      ...(priceType === "bidding" && {
+        biddingEndDate: new Date(biddingEndDate),
+        minBidIncrement,
+      }),
     });
+
     await listing.save();
     res.status(201).json(listing);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("❌ createListing error:", err);
+    res.status(500).json({ message: err.message });
   }
 };
-
-// READ (single)
+// READ single
 exports.getListingById = async (req, res) => {
   try {
-    const listing = await Listing.findById(req.params.id)
-      .populate("seller", "name university email")
-      .populate("offers.user", "name email");
+    const listing = await Listing.findById(req.params.id).populate(
+      "offers.user",
+      "username email"
+    );
     if (!listing)
       return res.status(404).json({ message: "Listing not found." });
     res.json(listing);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-// READ (all, with filters)
+// READ all
+// READ all listings - simple version (no filters)
 exports.getListings = async (req, res) => {
   try {
-    const filter = {};
-    // Filtering by query string
-    if (req.query.category) filter.category = req.query.category;
-    if (req.query.university) filter.university = req.query.university;
-    if (req.query.type) filter.type = req.query.type;
-    if (req.query.priceType) filter.priceType = req.query.priceType;
-    if (req.query.status) filter.status = req.query.status;
-    if (req.query.seller) filter.seller = req.query.seller;
-    if (req.query.visibility) filter.visibility = req.query.visibility;
-    if (req.query.condition) filter.condition = req.query.condition;
-    if (req.query.q) filter.title = { $regex: req.query.q, $options: "i" };
-
-    // Price range filter (e.g., ?minPrice=10&maxPrice=200)
-    if (req.query.minPrice || req.query.maxPrice) {
-      filter.price = {};
-      if (req.query.minPrice) filter.price.$gte = Number(req.query.minPrice);
-      if (req.query.maxPrice) filter.price.$lte = Number(req.query.maxPrice);
-    }
-
-    const listings = await Listing.find(filter)
+    const listings = await Listing.find()
       .sort({ createdAt: -1 })
-      .populate("seller", "name university");
+      .populate("offers.user", "username email"); // optional populate
     res.json(listings);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("❌ getListings error:", err);
+    res.status(500).json({ message: "Failed to get listings." });
   }
 };
 
-// UPDATE (owner or admin only)
+// UPDATE (owner or admin)
 exports.updateListing = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
     if (!listing)
       return res.status(404).json({ message: "Listing not found." });
 
-    // Only owner or admin can update
-    if (String(listing.seller) !== req.user.id && !req.user.isAdmin)
+    // ← compare email
+    if (listing.seller !== req.user.email && !req.user.isAdmin) {
       return res.status(403).json({ message: "Not authorized." });
+    }
 
-    // Only allow certain fields to be updated
-    const updatableFields = [
+    const updatable = [
       "title",
       "description",
       "images",
@@ -104,31 +113,32 @@ exports.updateListing = async (req, res) => {
       "condition",
       "status",
     ];
-    updatableFields.forEach((field) => {
+    updatable.forEach((field) => {
       if (req.body[field] !== undefined) listing[field] = req.body[field];
     });
 
     await listing.save();
     res.json(listing);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-// DELETE (owner or admin only)
+// DELETE (owner or admin)
 exports.deleteListing = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
     if (!listing)
       return res.status(404).json({ message: "Listing not found." });
 
-    if (String(listing.seller) !== req.user.id && !req.user.isAdmin)
+    if (listing.seller !== req.user.email && !req.user.isAdmin) {
       return res.status(403).json({ message: "Not authorized." });
+    }
 
     await listing.remove();
     res.json({ message: "Listing deleted." });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -138,45 +148,42 @@ exports.addOffer = async (req, res) => {
     const listing = await Listing.findById(req.params.id);
     if (!listing)
       return res.status(404).json({ message: "Listing not found." });
-
-    if (listing.priceType !== "bidding")
+    if (listing.priceType !== "bidding") {
       return res
         .status(400)
         .json({ message: "Offers allowed only on bidding listings." });
-
-    // Prevent seller from bidding on own item
-    if (String(listing.seller) === req.user.id)
+    }
+    // ← compare email
+    if (listing.seller === req.user.email) {
       return res
         .status(400)
         .json({ message: "Cannot bid on your own listing." });
+    }
 
-    const offer = {
-      user: req.user.id,
+    listing.offers.push({
+      user: req.user.id, // assuming your JWT payload has `id`
       amount: req.body.amount,
-    };
-    listing.offers.push(offer);
+    });
     await listing.save();
     res.status(201).json(listing);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-// CHANGE STATUS (e.g., sold/removed)
+// CHANGE STATUS
 exports.changeStatus = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
     if (!listing)
       return res.status(404).json({ message: "Listing not found." });
-
-    // Only seller or admin can change status
-    if (String(listing.seller) !== req.user.id && !req.user.isAdmin)
+    if (listing.seller !== req.user.email && !req.user.isAdmin) {
       return res.status(403).json({ message: "Not authorized." });
-
+    }
     listing.status = req.body.status;
     await listing.save();
     res.json(listing);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };

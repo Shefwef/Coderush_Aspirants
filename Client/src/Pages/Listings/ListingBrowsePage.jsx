@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import ListingCard from "../../Components/Listings/ListingCard.jsx";
+import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  TextField,
+  Container,
   Typography,
+  Grid,
+  CircularProgress,
+  TextField,
   FormControl,
   InputLabel,
-  CircularProgress,
-  Grid,
+  Select,
+  MenuItem,
+  Box,
+  Button,
 } from "@mui/material";
+import axios from "axios";
+import ListingCard from "../../Components/Listings/ListingCard";
 
 const categories = [
   "Books",
@@ -21,37 +22,56 @@ const categories = [
   "Skill Exchange",
   "Others",
 ];
-const priceTypes = ["fixed", "bidding", "hourly"];
-const conditions = ["like new", "good", "fair"];
-const visibilities = ["university", "all"];
 
 export default function ListingBrowsePage() {
   const [listings, setListings] = useState([]);
-  const [filters, setFilters] = useState({
-    category: "",
-    priceType: "",
-    condition: "",
-    visibility: "",
-    university: "",
-    q: "",
-    minPrice: "",
-    maxPrice: "",
-  });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Filters & search state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [sortPrice, setSortPrice] = useState(""); // "asc" or "desc"
 
   const fetchListings = async () => {
     setLoading(true);
+    setError("");
     try {
+      // Build query params for API call
       const params = {};
-      Object.entries(filters).forEach(([k, v]) => {
-        if (v) params[k] = v;
+
+      if (searchTerm.trim() !== "") {
+        // We'll search by title or category using `q` param on backend
+        params.q = searchTerm.trim();
+      }
+      if (categoryFilter) {
+        params.category = categoryFilter;
+      }
+      if (minPrice !== "") {
+        params.minPrice = minPrice;
+      }
+      if (maxPrice !== "") {
+        params.maxPrice = maxPrice;
+      }
+
+      const { data } = await axios.get("http://localhost:4000/listings", {
+        params,
       });
-      const res = await axios.get("/api/listings", { params });
-      setListings(res.data);
-      setError("");
+
+      // Sort on frontend by price if needed
+      let sortedData = data;
+      if (sortPrice === "asc") {
+        sortedData = [...data].sort((a, b) => a.price - b.price);
+      } else if (sortPrice === "desc") {
+        sortedData = [...data].sort((a, b) => b.price - a.price);
+      }
+
+      setListings(sortedData);
     } catch (err) {
-      setError("Failed to load listings.");
+      setError("Failed to fetch listings.");
+      setListings([]);
     } finally {
       setLoading(false);
     }
@@ -59,189 +79,133 @@ export default function ListingBrowsePage() {
 
   useEffect(() => {
     fetchListings();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, categoryFilter, minPrice, maxPrice, sortPrice]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    fetchListings();
+  // Reset filters
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setCategoryFilter("");
+    setMinPrice("");
+    setMaxPrice("");
+    setSortPrice("");
   };
 
   return (
-    <Box maxWidth={900} mx="auto" p={2}>
-      <Typography variant="h4" mb={3} align="center">
-        Marketplace Listings
+    <Container sx={{ mt: 4, mb: 6 }}>
+      <Typography variant="h4" textAlign="center" gutterBottom>
+        Browse Listings
       </Typography>
 
-      <Box component="form" onSubmit={handleSearch} mb={3}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={6} md={4}>
-            <TextField
-              fullWidth
-              label="Search title"
-              name="q"
-              value={filters.q}
-              onChange={handleInputChange}
-              size="small"
-            />
-          </Grid>
+      {/* Filters & Search */}
+      <Box
+        component="form"
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+          mb: 4,
+          justifyContent: "center",
+        }}
+        noValidate
+        autoComplete="off"
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchListings();
+        }}
+      >
+        <TextField
+          label="Search by Title or Category"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          size="small"
+          sx={{ minWidth: 220 }}
+        />
 
-          <Grid item xs={12} sm={6} md={4}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Category</InputLabel>
-              <Select
-                label="Category"
-                name="category"
-                value={filters.category}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="">All Categories</MenuItem>
-                {categories.map((cat) => (
-                  <MenuItem key={cat} value={cat}>
-                    {cat}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+        <FormControl size="small" sx={{ minWidth: 160 }}>
+          <InputLabel>Category</InputLabel>
+          <Select
+            value={categoryFilter}
+            label="Category"
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <MenuItem value="">All Categories</MenuItem>
+            {categories.map((cat) => (
+              <MenuItem key={cat} value={cat}>
+                {cat}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-          <Grid item xs={12} sm={6} md={4}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Price Type</InputLabel>
-              <Select
-                label="Price Type"
-                name="priceType"
-                value={filters.priceType}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="">All Price Types</MenuItem>
-                {priceTypes.map((pt) => (
-                  <MenuItem key={pt} value={pt}>
-                    {pt.charAt(0).toUpperCase() + pt.slice(1)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+        <TextField
+          label="Min Price"
+          type="number"
+          size="small"
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
+          sx={{ width: 100 }}
+          inputProps={{ min: 0 }}
+        />
 
-          <Grid item xs={12} sm={6} md={4}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Condition</InputLabel>
-              <Select
-                label="Condition"
-                name="condition"
-                value={filters.condition}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="">All Conditions</MenuItem>
-                {conditions.map((c) => (
-                  <MenuItem key={c} value={c}>
-                    {c.charAt(0).toUpperCase() + c.slice(1)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+        <TextField
+          label="Max Price"
+          type="number"
+          size="small"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+          sx={{ width: 100 }}
+          inputProps={{ min: 0 }}
+        />
 
-          <Grid item xs={12} sm={6} md={4}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Visibility</InputLabel>
-              <Select
-                label="Visibility"
-                name="visibility"
-                value={filters.visibility}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="">All Visibility</MenuItem>
-                {visibilities.map((v) => (
-                  <MenuItem key={v} value={v}>
-                    {v.charAt(0).toUpperCase() + v.slice(1)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+        <FormControl size="small" sx={{ minWidth: 160 }}>
+          <InputLabel>Sort by Price</InputLabel>
+          <Select
+            value={sortPrice}
+            label="Sort by Price"
+            onChange={(e) => setSortPrice(e.target.value)}
+          >
+            <MenuItem value="">None</MenuItem>
+            <MenuItem value="asc">Low to High</MenuItem>
+            <MenuItem value="desc">High to Low</MenuItem>
+          </Select>
+        </FormControl>
 
-          <Grid item xs={12} sm={6} md={4}>
-            <TextField
-              fullWidth
-              label="University"
-              name="university"
-              value={filters.university}
-              onChange={handleInputChange}
-              size="small"
-            />
-          </Grid>
-
-          <Grid item xs={6} sm={3} md={2}>
-            <TextField
-              fullWidth
-              label="Min Price"
-              name="minPrice"
-              type="number"
-              value={filters.minPrice}
-              onChange={handleInputChange}
-              size="small"
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-
-          <Grid item xs={6} sm={3} md={2}>
-            <TextField
-              fullWidth
-              label="Max Price"
-              name="maxPrice"
-              type="number"
-              value={filters.maxPrice}
-              onChange={handleInputChange}
-              size="small"
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={4}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              fullWidth
-              sx={{ height: "40px" }}
-            >
-              Search
-            </Button>
-          </Grid>
-        </Grid>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleResetFilters}
+          sx={{ minWidth: 100 }}
+        >
+          Reset
+        </Button>
       </Box>
 
-      {loading && (
-        <Box textAlign="center" my={3}>
+      {/* Listings */}
+      {loading ? (
+        <Box sx={{ textAlign: "center", mt: 6 }}>
           <CircularProgress />
+          <Typography variant="h6" mt={2}>
+            Loading listings...
+          </Typography>
         </Box>
-      )}
-
-      {error && (
-        <Typography color="error" align="center" mb={3}>
+      ) : error ? (
+        <Typography variant="h6" color="error" textAlign="center" mt={6}>
           {error}
         </Typography>
-      )}
-
-      {!loading && listings.length === 0 && (
-        <Typography align="center" color="textSecondary" mb={3}>
+      ) : listings.length === 0 ? (
+        <Typography variant="h6" textAlign="center" mt={6}>
           No listings found.
         </Typography>
+      ) : (
+        <Grid container spacing={2}>
+          {listings.map((listing) => (
+            <Grid item xs={12} sm={6} md={4} key={listing._id}>
+              <ListingCard listing={listing} />
+            </Grid>
+          ))}
+        </Grid>
       )}
-
-      <Grid container spacing={2}>
-        {listings.map((listing) => (
-          <Grid key={listing._id} item xs={12} sm={6} md={4}>
-            <ListingCard listing={listing} />
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+    </Container>
   );
 }
