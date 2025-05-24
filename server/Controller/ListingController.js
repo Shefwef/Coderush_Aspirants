@@ -1,6 +1,57 @@
 // controllers/ListingController.js
 const Listing = require("../Model/listing.model");
 const User = require("../Model/user.model");
+// In ListingController.js
+const { Groq } = require("groq-sdk");
+const groqClient = new Groq({
+  apiKey: process.env.GROQ_API,
+  dangerouslyAllowBrowser: false, // Ensure server-side only
+});
+
+exports.predictPriceWithGroq = async (req, res) => {
+  try {
+    const { category, condition } = req.body;
+
+    // Validate the inputs
+    if (!category || !condition) {
+      return res
+        .status(400)
+        .json({ message: "Category and condition are required." });
+    }
+
+    // Call Groq's API for price prediction
+    const groqResponse = await groqClient.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `Predict price based on category: ${category} and condition: ${condition}.`,
+            },
+          ],
+        },
+      ],
+      model: "llama-3.2-90b-vision-preview",
+      temperature: 1,
+      max_completion_tokens: 1024,
+      top_p: 1,
+      stream: false,
+      stop: null,
+    });
+
+    // Extract the predicted price
+    const predictedPrice = groqResponse.choices[0]?.message?.content?.trim();
+    if (!predictedPrice) {
+      return res.status(500).json({ message: "Error predicting price" });
+    }
+
+    res.status(200).json({ predictedPrice });
+  } catch (err) {
+    console.error("Error predicting price with Groq:", err);
+    res.status(500).json({ message: "Failed to predict price." });
+  }
+};
 
 exports.createListing = async (req, res) => {
   const { userId } = req.params;

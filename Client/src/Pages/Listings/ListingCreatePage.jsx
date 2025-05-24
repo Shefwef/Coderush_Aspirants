@@ -93,6 +93,40 @@ export default function ListingCreatePage() {
     };
   }, [timeoutId]);
 
+  const handlePricePrediction = async () => {
+    try {
+      // Call the Groq API to predict the price based on category and condition
+      const response = await fetch(
+        `http://localhost:4000/listings/predictPriceWithGroq`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            category: form.category,
+            condition: form.condition,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.predictedPrice) {
+        setForm((prevForm) => ({
+          ...prevForm,
+          price: data.predictedPrice,
+        }));
+      }
+    } catch (error) {
+      console.error("Error predicting price:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to predict price.",
+        severity: "error",
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -294,6 +328,17 @@ export default function ListingCreatePage() {
                 ))}
               </Select>
             </FormControl>
+          </Grid>
+
+          {/* Predict Price Button */}
+          <Grid item xs={12} sm={4}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handlePricePrediction}
+            >
+              Predict Price
+            </Button>
           </Grid>
 
           {/* Bidding Fields */}
