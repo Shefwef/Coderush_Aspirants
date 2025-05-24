@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Paper,
   TextField,
+  MenuItem,
   useTheme,
 } from "@mui/material";
 import { Check } from "lucide-react";
@@ -16,6 +17,7 @@ import { Check } from "lucide-react";
 const Preferences = () => {
   const theme = useTheme();
   const [preferences, setPreferences] = useState({
+    university: "",
     dept: "",
     program: "",
     yearOfStudy: "",
@@ -33,8 +35,7 @@ const Preferences = () => {
           "http://localhost:4000/users/preferences",
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        // if already set, skip
-        if (res.data && res.data.dept) {
+        if (res.data && res.data.university) {
           navigate("/");
         }
       } catch (err) {
@@ -99,6 +100,26 @@ const Preferences = () => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={4}>
+            {/* University Select */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                select
+                fullWidth
+                required
+                label="University"
+                name="university"
+                value={preferences.university}
+                onChange={handleChange}
+              >
+                {["IUT", "DU", "BUET"].map((uni) => (
+                  <MenuItem key={uni} value={uni}>
+                    {uni}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            {/* Department */}
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
@@ -109,6 +130,8 @@ const Preferences = () => {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Program */}
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
@@ -119,6 +142,8 @@ const Preferences = () => {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Year of Study */}
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
@@ -130,6 +155,8 @@ const Preferences = () => {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Date of Birth */}
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
@@ -143,6 +170,7 @@ const Preferences = () => {
               />
             </Grid>
           </Grid>
+
           <Box sx={{ textAlign: "center", mt: 4 }}>
             <Button
               type="submit"
@@ -153,6 +181,7 @@ const Preferences = () => {
               {loading ? "Saving..." : "Save"}
             </Button>
           </Box>
+
           {successMessage && (
             <Typography color="success.main" align="center" sx={{ mt: 2 }}>
               {successMessage}

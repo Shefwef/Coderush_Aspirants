@@ -29,22 +29,27 @@ const UserSchema = new Schema(
 
     // ←– remove petTypes and areas here
 
-    // ←– add these
+    // ←– new field
+    university: {
+      type: String,
+      enum: ["IUT", "DU", "BUET"],
+      required: false,
+    },
     dept: {
       type: String,
-      required: true,
+      required: false,
     },
     program: {
       type: String,
-      required: true,
+      required: false,
     },
     yearOfStudy: {
       type: Number,
-      required: true,
+      required: false,
     },
     dob: {
       type: Date,
-      required: true,
+      required: false,
     },
 
     wishlist: [

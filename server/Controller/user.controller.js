@@ -19,22 +19,19 @@ const savePreferences = async (req, res, next) => {
   try {
     const userId = req.userId;
     const uid = req.uid;
-
     if (!userId && !uid) {
       return res.status(403).send("User ID not found. Please log in again.");
     }
 
     // ←– pull in the new fields
-    const { dept, program, yearOfStudy, dob } = req.body;
-
-    const update = { dept, program, yearOfStudy, dob };
+    const { university, dept, program, yearOfStudy, dob } = req.body;
+    const update = { university, dept, program, yearOfStudy, dob };
 
     const user = uid
       ? await User.findOneAndUpdate({ uid }, update, { new: true })
       : await User.findByIdAndUpdate(userId, update, { new: true });
 
     if (!user) return res.status(404).send("User not found.");
-
     res.status(200).send("Preferences saved successfully.");
   } catch (err) {
     console.error("Error saving preferences:", err);
