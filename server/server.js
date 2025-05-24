@@ -8,6 +8,7 @@ const authRoute = require("./Routes/auth.route");
 const AdminRoute = require("./Routes/AdminRoute");
 const vetRouter = require("./Routes/VetRoute");
 const wishlistRouter = require("./Routes/wishlist");
+const listingRoutes = require("./Routes/listing.route");
 const communicationRouter = require("./Routes/ChatRoutes");
 const profilerouter = require("./Routes/profileroute.js");
 const msgRouter = require("./Routes/MessageRoutes");
@@ -44,6 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(petRouter);
+app.use("/api/listings", listingRoutes);
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/api/vets", vetRouter);
