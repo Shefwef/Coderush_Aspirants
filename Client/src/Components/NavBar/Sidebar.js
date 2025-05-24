@@ -154,19 +154,7 @@ const Sidebar = () => {
         {[
           { label: "Home", icon: <HomeIcon />, path: "/" },
           { label: "Wishlist", icon: <WishlistIcon />, path: "/wishlist" },
-          { label: "My Pets", icon: <ProfileIcon />, path: "/mypets" },
-          {
-            label: "Give a Pet",
-            icon: <VolunteerActivismIcon />,
-            path: "/post-pet",
-          },
-          { label: "Find Pets", icon: <PetsIcon />, path: "/pets" },
-          {
-            label: "Train Pets",
-            icon: <FitnessCenterIcon />,
-            path: "/trainpets",
-          },
-          { label: "Find Vets", icon: <VetsIcon />, path: "/nearby-vets" },
+          { label: "My Products", icon: <ProfileIcon />, path: "/mypets" },
           {
             label: "Browse Listings",
             icon: <StorefrontIcon />,
