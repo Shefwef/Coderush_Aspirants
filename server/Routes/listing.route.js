@@ -19,5 +19,7 @@ router.post("/:id/offer", verifyToken, ListingController.addOffer);
 
 // Change status (sold/removed)
 router.patch("/:id/status", verifyToken, ListingController.changeStatus);
+// In routes/listings.js
+router.post("/predictPriceWithGroq", ListingController.predictPriceWithGroq);
 
 module.exports = router;
