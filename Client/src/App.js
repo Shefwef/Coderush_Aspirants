@@ -5,6 +5,9 @@ import Profile from "./Components/Profile/Profile.jsx";
 import Wishlist from "./Components/Profile/wishlist.js";
 import MyPets from "./Components/Profile/mypets.js";
 import NewsPage from "./Components/NewsPage/NewsPage.js";
+import ListingBrowsePage from "./Pages/Listings/ListingBrowsePage";
+import ListingCreatePage from "./Pages/Listings/ListingCreatePage";
+
 import Home from "./Components/Home/Home";
 import Login from "./Pages/login/Login.jsx";
 import Register from "./Pages/register/Register.jsx";
@@ -97,6 +100,23 @@ const App = () => {
             </Layout>
           }
         />
+        <Route
+          path="/listings"
+          element={
+            <Layout>
+              <ListingBrowsePage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/listings/create"
+          element={
+            <Layout>
+              <ListingCreatePage />
+            </Layout>
+          }
+        />
+
         <Route
           path="/pets"
           element={
