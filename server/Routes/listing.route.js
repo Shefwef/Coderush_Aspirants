@@ -10,7 +10,7 @@ router.get("/", ListingController.getListings);
 router.get("/:id", ListingController.getListingById);
 
 // Protected (must be logged in)
-router.post("/", verifyToken, createListing);
+router.post("/create/:userId", verifyToken, createListing);
 router.patch("/:id", verifyToken, updateListing);
 router.delete("/:id", verifyToken, deleteListing);
 
