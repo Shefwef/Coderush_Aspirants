@@ -364,6 +364,56 @@ const Profile = () => {
                 </Box>
               </Box>
             </Grid>
+            {/*universty*/}
+            <Grid item xs={12} sm={6}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  p: 2,
+                  background: "#fff",
+                  borderRadius: 3,
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                }}
+              >
+                <Settings color="primary" sx={{ fontSize: "2.7rem" }} />
+                <Box>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    University
+                  </Typography>
+
+                  <Typography variant="body1" fontWeight="medium">
+                    {user.university}
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            {/* Year of Study */}
+            <Grid item xs={12} sm={6}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  p: 2,
+                  background: "#fff",
+                  borderRadius: 3,
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                }}
+              >
+                <Settings color="primary" sx={{ fontSize: "2.7rem" }} />
+                <Box>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Year of Study
+                  </Typography>
+                  <Typography variant="body1" fontWeight="medium">
+                    {user.yearOfStudy}
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+
             {/* Department */}
             <Grid item xs={12} sm={6}>
               <Box
@@ -408,30 +458,6 @@ const Profile = () => {
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
                     {user.program}
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-            {/* Year of Study */}
-            <Grid item xs={12} sm={6}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
-                  p: 2,
-                  background: "#fff",
-                  borderRadius: 3,
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                }}
-              >
-                <Settings color="primary" sx={{ fontSize: "2.7rem" }} />
-                <Box>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Year of Study
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {user.yearOfStudy}
                   </Typography>
                 </Box>
               </Box>
