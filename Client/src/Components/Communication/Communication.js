@@ -114,7 +114,7 @@ const Communication = () => {
         body: JSON.stringify({
           chatId: selectedChat.chatId,
           senderId: currentUser._id,
-          content: "Shared a meetup location", // <-- non-empty text to satisfy schema
+          content: "Shared a meetup location",
           location: location, // { lat, lng }
         }),
       });
@@ -351,7 +351,7 @@ const Communication = () => {
           variant="subtitle1"
           sx={{ fontWeight: "medium", color: "secondary.main", mb: 1 }}
         >
-          Chat with Buyer
+          Chat with Buyers
         </Typography>
         <List sx={{ mb: 2 }}>
           {adopterChats.map((chat) => (
@@ -404,7 +404,7 @@ const Communication = () => {
           variant="subtitle1"
           sx={{ fontWeight: "medium", color: "secondary.main", mt: 2, mb: 1 }}
         >
-          Chat with Seller
+          Chat with Sellers
         </Typography>
         <List>
           {adopteeChats.map((chat) => (
@@ -885,6 +885,7 @@ const Communication = () => {
               <DialogTitle>Select Meetup Location</DialogTitle>
               <DialogContent>
                 <CampusMap
+                  universityName="IUT"
                   onSelectLocation={(location) => {
                     handleSendLocation(location);
                     closeMapDialog();
