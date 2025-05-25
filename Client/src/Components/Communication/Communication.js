@@ -25,8 +25,8 @@ import ArchivedChats from "./ArchivedChats";
 import axios from "axios";
 
 const Communication = () => {
-  const [adopterChats, setAdopterChats] = useState([]);
-  const [adopteeChats, setAdopteeChats] = useState([]);
+  const [sellerChats, setsellerChats] = useState([]);
+  const [buyerChats, setbuyerChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
@@ -114,7 +114,7 @@ const Communication = () => {
         body: JSON.stringify({
           chatId: selectedChat.chatId,
           senderId: currentUser._id,
-          content: "Shared a meetup location",
+          content: "Shared a meetup location", // <-- non-empty text to satisfy schema
           location: location, // { lat, lng }
         }),
       });
@@ -195,26 +195,26 @@ const Communication = () => {
     setReviewText("");
   };
 
-  // Fetch adopter and adoptee chat lists and messages
+  // Fetch seller and buyer chat lists and messages
   const fetchChatsAndMessages = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
 
-      // Fetch adopter chats
-      const adopterResponse = await fetch(
-        `http://localhost:4000/chats/adopter-chat-list/${currentUser._id}`,
+      // Fetch seller chats
+      const sellerResponse = await fetch(
+        `http://localhost:4000/chats/seller-chat-list/${currentUser._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const adopterData = await adopterResponse.json();
-      setAdopterChats(adopterData || []);
+      const sellerData = await sellerResponse.json();
+      setsellerChats(sellerData || []);
 
-      // Fetch adoptee chats
-      const adopteeResponse = await fetch(
-        `http://localhost:4000/chats/adoptee-chat-list/${currentUser._id}`,
+      // Fetch buyer chats
+      const buyerResponse = await fetch(
+        `http://localhost:4000/chats/buyer-chat-list/${currentUser._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const adopteeData = await adopteeResponse.json();
-      setAdopteeChats(adopteeData || []);
+      const buyerData = await buyerResponse.json();
+      setbuyerChats(buyerData || []);
 
       // Fetch messages if a chat is selected
       if (selectedChat) {
@@ -288,7 +288,7 @@ const Communication = () => {
           },
           body: JSON.stringify({
             chatId: selectedChat.chatId,
-            petId: selectedChat.petId,
+            productId: selectedChat.productId,
             status,
             userId: currentUser._id, // Pass userId in the request body
             review: review, // Ensure review is passed
@@ -305,7 +305,7 @@ const Communication = () => {
     }
   };
 
-  // Handle blocking a user (Only for Adoptees)
+  // Handle blocking a user (Only for buyers)
   const handleBlockUser = async () => {
     if (!selectedChat) return;
 
@@ -318,10 +318,10 @@ const Communication = () => {
     window.location.reload();
   };
 
-  // Determine if the current user is the adoptee in the selected chat
-  const isAdoptee =
+  // Determine if the current user is the buyer in the selected chat
+  const isbuyer =
     selectedChat &&
-    adopteeChats.some((chat) => chat.chatId === selectedChat.chatId);
+    buyerChats.some((chat) => chat.chatId === selectedChat.chatId);
 
   return (
     <Box sx={{ display: "flex", maxHeight: "auto", marginLeft: "3%" }}>
@@ -351,10 +351,10 @@ const Communication = () => {
           variant="subtitle1"
           sx={{ fontWeight: "medium", color: "secondary.main", mb: 1 }}
         >
-          Chat with Buyers
+          Chat with Buyer
         </Typography>
         <List sx={{ mb: 2 }}>
-          {adopterChats.map((chat) => (
+          {sellerChats.map((chat) => (
             <ListItem
               key={chat.chatId}
               button
@@ -389,7 +389,7 @@ const Communication = () => {
                         marginLeft: 1,
                         boxShadow: 1, // Adds a subtle shadow
                       }}
-                      title="Adopter"
+                      title="seller"
                     />
                   </Box>
                 }
@@ -399,15 +399,15 @@ const Communication = () => {
         </List>
         <Divider />
 
-        {/* Chat with Adopters */}
+        {/* Chat with sellers */}
         <Typography
           variant="subtitle1"
           sx={{ fontWeight: "medium", color: "secondary.main", mt: 2, mb: 1 }}
         >
-          Chat with Sellers
+          Chat with Seller
         </Typography>
         <List>
-          {adopteeChats.map((chat) => (
+          {buyerChats.map((chat) => (
             <ListItem
               key={chat.chatId}
               button
@@ -442,7 +442,7 @@ const Communication = () => {
                         marginLeft: 1,
                         boxShadow: 1,
                       }}
-                      title="Adoptee"
+                      title="buyer"
                     />
                   </Box>
                 }
@@ -525,21 +525,21 @@ const Communication = () => {
                     height: 15,
                     borderRadius: "50%",
                     transition: "transform 0.3s ease",
-                    bgcolor: adopterChats.some(
+                    bgcolor: sellerChats.some(
                       (chat) => chat.chatId === selectedChat.chatId
                     )
-                      ? "#81c784" // Green for adopters
-                      : "#ffb74d", // Orange for adoptees
+                      ? "#81c784" // Green for sellers
+                      : "#ffb74d", // Orange for buyers
                     "&:hover": {
                       transform: "scale(1.2)",
                     },
                   }}
                   title={
-                    adopterChats.some(
+                    sellerChats.some(
                       (chat) => chat.chatId === selectedChat.chatId
                     )
-                      ? "Adopter"
-                      : "Adoptee"
+                      ? "seller"
+                      : "buyer"
                   }
                 />
               </Box>
@@ -563,7 +563,7 @@ const Communication = () => {
                 }}
               >
                 {/* Conditional Buttons for Actions */}
-                {adopteeChats.some(
+                {buyerChats.some(
                   (chat) =>
                     chat.chatId === selectedChat.chatId &&
                     chat.status === "active" &&
@@ -586,7 +586,7 @@ const Communication = () => {
                   </Button>
                 )}
 
-                {adopterChats.some(
+                {sellerChats.some(
                   (chat) => chat.chatId === selectedChat.chatId
                 ) &&
                   selectedChat.status === "sent" && (
@@ -623,8 +623,8 @@ const Communication = () => {
                   Cancel
                 </Button>
 
-                {/* Block Button (Only for Adoptees) */}
-                {isAdoptee && (
+                {/* Block Button (Only for buyers) */}
+                {isbuyer && (
                   <Tooltip title="Block User" placement="top">
                     <IconButton
                       sx={{
@@ -885,7 +885,6 @@ const Communication = () => {
               <DialogTitle>Select Meetup Location</DialogTitle>
               <DialogContent>
                 <CampusMap
-                  universityName="IUT"
                   onSelectLocation={(location) => {
                     handleSendLocation(location);
                     closeMapDialog();

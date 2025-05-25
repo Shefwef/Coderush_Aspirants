@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 
 const ArchivedChats = ({ open, onClose }) => {
-  const [adopterChats, setAdopterChats] = useState([]);
+  const [sellerChats, setsellerChats] = useState([]);
   const [adopteeChats, setAdopteeChats] = useState([]);
 
   const [selectedChat, setSelectedChat] = useState(null);
@@ -28,7 +28,7 @@ const ArchivedChats = ({ open, onClose }) => {
   // Define color constants
   const senderColor = "#DCF8C6"; // Light green for sent messages
   const receiverColor = "#FFFFFF"; // White for received messages
-  const adopterColor = "#3f51b5"; // Blue for Adopter
+  const sellerColor = "#3f51b5"; // Blue for seller
   const adopteeColor = "#f50057"; // Pink for Adoptee
 
   // Fetch chats
@@ -36,13 +36,13 @@ const ArchivedChats = ({ open, onClose }) => {
     try {
       const token = localStorage.getItem("token");
 
-      // Fetch adopter chats
-      const adopterResponse = await fetch(
-        `http://localhost:4000/chats/archive-adopter-chat-list/${currentUser._id}`,
+      // Fetch seller chats
+      const sellerResponse = await fetch(
+        `http://localhost:4000/chats/archive-seller-chat-list/${currentUser._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const adopterData = await adopterResponse.json();
-      setAdopterChats(adopterData || []);
+      const sellerData = await sellerResponse.json();
+      setsellerChats(sellerData || []);
 
       // Fetch adoptee chats
       const adopteeResponse = await fetch(
@@ -94,7 +94,7 @@ const ArchivedChats = ({ open, onClose }) => {
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Archived Chats</DialogTitle>
       <DialogContent>
-        {adopterChats.length === 0 && adopteeChats.length === 0 ? (
+        {sellerChats.length === 0 && adopteeChats.length === 0 ? (
           <Typography variant="body1" align="center" sx={{ marginTop: 2 }}>
             No chat exchanged between.
           </Typography>
@@ -102,13 +102,13 @@ const ArchivedChats = ({ open, onClose }) => {
           <>
             <Typography variant="subtitle1">Chat with Donator</Typography>
             <List>
-              {adopterChats.map((chat) => (
+              {sellerChats.map((chat) => (
                 <ListItem
                   key={chat.chatId}
                   button
                   onClick={() => handleChatSelect(chat)}
                 >
-                  <Avatar sx={{ marginRight: 2, bgcolor: adopterColor }}>
+                  <Avatar sx={{ marginRight: 2, bgcolor: sellerColor }}>
                     {chat.name ? chat.name[0] : "A"}
                   </Avatar>
                   <ListItemText
@@ -120,7 +120,7 @@ const ArchivedChats = ({ open, onClose }) => {
             </List>
             <Divider />
             <Typography variant="subtitle1" sx={{ marginTop: 2 }}>
-              Chat with Adopters
+              Chat with sellers
             </Typography>
             <List>
               {adopteeChats.map((chat) => (

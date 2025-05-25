@@ -14,7 +14,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 const ProfileModal = ({ open, onClose, profileData }) => {
-  const { username, email, reviewsAsAdopter, reviewsAsDonator } = profileData;
+  const { username, email, reviewsAsseller, reviewsAsDonator } = profileData;
 
   return (
     <Dialog
@@ -66,13 +66,13 @@ const ProfileModal = ({ open, onClose, profileData }) => {
             Reviews
           </Typography>
 
-          {/* Reviews as Adopter */}
+          {/* Reviews as seller */}
           <Typography variant="subtitle2" sx={{ marginBottom: 1 }}>
-            <strong>As Adopter:</strong>
+            <strong>As seller:</strong>
           </Typography>
           <List dense>
-            {reviewsAsAdopter && reviewsAsAdopter.length > 0 ? (
-              reviewsAsAdopter.map((review, index) => (
+            {reviewsAsseller && reviewsAsseller.length > 0 ? (
+              reviewsAsseller.map((review, index) => (
                 <Box key={index} sx={{ marginBottom: 2 }}>
                   <ListItem sx={{ paddingLeft: 0 }}>
                     <ListItemText
@@ -109,7 +109,7 @@ const ProfileModal = ({ open, onClose, profileData }) => {
               ))
             ) : (
               <Typography variant="body2" color="text.secondary">
-                No reviews as an adopter.
+                No reviews as an seller.
               </Typography>
             )}
           </List>
