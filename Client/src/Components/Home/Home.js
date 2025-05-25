@@ -1,5 +1,4 @@
-// src/Components/Home/Home.js
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -14,6 +13,7 @@ import {
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import HeroImage from "./images/marketplace-hero.jpg";
 import textbooksImg from "./images/textbooks.jpg";
@@ -22,19 +22,43 @@ import bikesImg from "./images/bikes.jpeg";
 import tutoringImg from "./images/tutoring.jpg";
 import skillswapImg from "./images/skillswap.jpeg";
 
-const SIDEBAR_WIDTH = 72; // match your actual sidebar width
+const SIDEBAR_WIDTH = 72;
 
 const categories = [
-  { title: "Textbooks", img: textbooksImg },
-  { title: "Gadgets", img: gadgetsImg },
-  { title: "Bikes", img: bikesImg },
+  { title: "Books", img: textbooksImg },
+  { title: "Electronics", img: gadgetsImg },
   { title: "Tutoring", img: tutoringImg },
-  { title: "Skill Swap", img: skillswapImg },
+  { title: "Skill Exchange", img: skillswapImg },
+  { title: "Others", img: bikesImg },
 ];
 
 export default function Home() {
-  const scrollDown = () =>
+  const [scrollToTopVisible, setScrollToTopVisible] = useState(false);
+
+  // Scroll effect
+  const handleScroll = () =>
     window.scrollBy({ top: window.innerHeight * 0.7, behavior: "smooth" });
+
+  // Detecting scroll position
+  const checkScrollPosition = () => {
+    if (window.scrollY > 500) {
+      setScrollToTopVisible(true);
+    } else {
+      setScrollToTopVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", checkScrollPosition);
+    return () => {
+      window.removeEventListener("scroll", checkScrollPosition);
+    };
+  }, []);
+
+  // Scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <Box sx={{ ml: `${SIDEBAR_WIDTH}px` }}>
@@ -51,11 +75,7 @@ export default function Home() {
         }}
       >
         <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            bgcolor: "rgba(0,0,0,0.35)",
-          }}
+          sx={{ position: "absolute", inset: 0, bgcolor: "rgba(0,0,0,0.35)" }}
         />
         <Box
           sx={{
@@ -133,7 +153,10 @@ export default function Home() {
                 borderColor: "primary.main",
                 backgroundColor: "#fff",
                 fontWeight: 600,
-                "&:hover": { backgroundColor: "rgba(30,42,120,0.08)" },
+                "&:hover": {
+                  backgroundColor: "#F0F0F0",
+                  borderColor: "#E0E0E0",
+                },
               }}
               onClick={() => (window.location.href = "/listings/create")}
             >
@@ -142,9 +165,9 @@ export default function Home() {
           </Box>
         </Box>
 
-        {/* Scroll-down arrow, bottom-right */}
+        {/* Scroll-down arrow */}
         <IconButton
-          onClick={scrollDown}
+          onClick={handleScroll}
           sx={{
             position: "absolute",
             bottom: 16,
@@ -162,15 +185,10 @@ export default function Home() {
         </IconButton>
       </Box>
 
-      {/* Categories */}
+      {/* Categories Section */}
       <Box
         component="section"
-        sx={{
-          py: 6,
-          px: 2,
-          maxWidth: 1200,
-          mx: "auto",
-        }}
+        sx={{ py: 6, px: 2, maxWidth: 1200, mx: "auto" }}
       >
         <Typography variant="h4" fontWeight="700" gutterBottom>
           Categories
@@ -211,6 +229,28 @@ export default function Home() {
           ))}
         </Grid>
       </Box>
+
+      {/* Scroll-to-top button */}
+      {scrollToTopVisible && (
+        <IconButton
+          onClick={scrollToTop}
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+            bgcolor: "#ffd500",
+            color: "common.black",
+            width: 56,
+            height: 56,
+            borderRadius: "50%",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            zIndex: 1000,
+            "&:hover": { bgcolor: "#e6c800" },
+          }}
+        >
+          <KeyboardArrowUpIcon fontSize="large" />
+        </IconButton>
+      )}
     </Box>
   );
 }

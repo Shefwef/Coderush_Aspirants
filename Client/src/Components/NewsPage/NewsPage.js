@@ -87,7 +87,7 @@ const NewsPage = () => {
         gutterBottom
         sx={{ fontWeight: "bold", color: "#19275c", marginBottom: 4 }}
       >
-        Get All Your News and Articles In One Place!
+        Get All Your Campus related news and Articles In One Place!
       </Typography>
       <Grid container spacing={7}>
         {paginatedArticles.map((article, index) => (

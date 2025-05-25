@@ -117,6 +117,18 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const googleUser = result.user;
+
+      const allowedDomains = ["iut-dhaka.edu", "buet.ac.bd", "du.ac.bd"];
+      const emailDomain = googleUser.email.split("@")[1];
+
+      if (!allowedDomains.includes(emailDomain)) {
+        await auth.signOut();
+        setError(
+          "Only university emails from iut-dhaka.edu, buet.ac.bd, or du.ac.bd are allowed."
+        );
+        return;
+      }
+
       const res = await newRequest.post(
         "http://localhost:4000/auth/google-login",
         {
@@ -126,9 +138,11 @@ const Login = () => {
           img: googleUser.photoURL,
         }
       );
+
       const { token, user } = res.data;
       localStorage.setItem("token", token);
       localStorage.setItem("currentUser", JSON.stringify(user));
+
       if (!user.areas || user.areas.length === 0) {
         navigate("/preferences");
       } else {
