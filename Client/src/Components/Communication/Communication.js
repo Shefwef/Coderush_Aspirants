@@ -984,7 +984,7 @@ const Communication = () => {
         onClose={handleCloseProfile}
         profileData={profileData}
       />
-      <ArchivedChats open={archiveModalOpen} onClose={handleCloseArchive} />
+      
     </Box>
   );
 };
