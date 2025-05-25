@@ -1,0 +1,9 @@
+[
+  {
+    "universityName": "University of XYZ",
+    "safeLocations": [
+      { "lat": 23.7807, "lng": 90.2796, "description": "Main Gate Area" },
+      { "lat": 23.781, "lng": 90.2801, "description": "Library surroundings" }
+    ]
+  }
+]
