@@ -35,16 +35,16 @@ const Wishlist = () => {
     fetchWishlistDetails();
   }, []);
 
-  const handleRemoveFromWishlist = async (petId) => {
+  const handleRemoveFromWishlist = async (productId) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
         "http://localhost:4000/wishlist/wishlistremove",
-        { petId },
+        { productId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.status === 200) {
-        setWishlist((prev) => prev.filter((pet) => pet._id !== petId));
+        setWishlist((prev) => prev.filter((pet) => pet._id !== productId));
       }
     } catch (err) {
       console.error("Failed to remove pet from wishlist:", err);

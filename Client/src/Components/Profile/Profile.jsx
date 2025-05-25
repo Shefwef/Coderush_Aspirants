@@ -155,16 +155,16 @@ const Profile = () => {
     }
   };
 
-  const handleRemoveFromWishlist = async (petId) => {
+  const handleRemoveFromWishlist = async (productId) => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
         "http://localhost:4000/wishlist/wishlistremove",
-        { petId },
+        { productId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 200) {
-        setWishlist((prev) => prev.filter((p) => p._id !== petId));
+        setWishlist((prev) => prev.filter((p) => p._id !== productId));
       }
     } catch (err) {
       console.error("Failed to remove pet from wishlist:", err);
@@ -514,7 +514,8 @@ const Profile = () => {
                   <Card>
                     <CardContent>
                       <Typography variant="h6">
-                        <b>Pet Name:</b> {review.petId?.name || "Unknown Pet"}
+                        <b>Pet Name:</b>{" "}
+                        {review.productId?.name || "Unknown Pet"}
                       </Typography>
                       <Typography variant="body2">
                         <b>Review:</b> {review.content}
