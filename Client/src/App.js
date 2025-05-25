@@ -37,7 +37,7 @@ const Layout = ({ children }) => {
       <Sidebar />
 
       {/* Navbar - Fixed at the top, but will be behind the sidebar */}
-      <Navbar title="Whiskers-n-Co" />
+      <Navbar title="Campus-buy" />
 
       <Box sx={{ display: "flex", flex: 1 }}>
         {/* Main Content Area */}
@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
       </Box>
 
       {/* Footer - Fixed at the bottom */}
-      <Footer title="Whiskers-n-Co" />
+      <Footer title="Campus-buy" />
     </Box>
   );
 };
@@ -76,22 +76,7 @@ const App = () => {
             </Layout>
           }
         />
-        <Route
-          path="/post-pet"
-          element={
-            <Layout>
-              <PostPetSection />
-            </Layout>
-          }
-        />
-        <Route
-          path="/adopt-pet"
-          element={
-            <Layout>
-              <AdoptSection />
-            </Layout>
-          }
-        />
+
         <Route
           path="/preferences"
           element={
@@ -117,38 +102,6 @@ const App = () => {
           }
         />
 
-        <Route
-          path="/pets"
-          element={
-            <Layout>
-              <Pets />
-            </Layout>
-          }
-        />
-        <Route
-          path="/trainpets"
-          element={
-            <Layout>
-              <TrainYourPet />
-            </Layout>
-          }
-        />
-        <Route
-          path="/adopt-form"
-          element={
-            <Layout>
-              <AdoptForm />
-            </Layout>
-          }
-        />
-        <Route
-          path="/nearby-vets"
-          element={
-            <Layout>
-              <NearbyVets />
-            </Layout>
-          }
-        />
         <Route
           path="/login"
           element={
@@ -207,7 +160,7 @@ const App = () => {
           }
         />
         <Route
-          path="/mypets"
+          path="/myproducts"
           element={
             <Layout>
               <MyPets />

@@ -64,7 +64,7 @@ const Sidebar = () => {
     const token = localStorage.getItem("token");
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
 
-    const restrictedRoutes = ["/profile", "/services", "/pets", "/mypets"];
+    const restrictedRoutes = ["/profile", "/services", "/pets", "/myproducts"];
     const isRestrictedRoute = restrictedRoutes.includes(location.pathname);
 
     if (isRestrictedRoute && (!token || !storedUser)) {
@@ -154,7 +154,7 @@ const Sidebar = () => {
         {[
           { label: "Home", icon: <HomeIcon />, path: "/" },
           { label: "Wishlist", icon: <WishlistIcon />, path: "/wishlist" },
-          { label: "My Products", icon: <ProfileIcon />, path: "/mypets" },
+          { label: "My Products", icon: <ProfileIcon />, path: "/myproducts" },
           {
             label: "Browse Listings",
             icon: <StorefrontIcon />,

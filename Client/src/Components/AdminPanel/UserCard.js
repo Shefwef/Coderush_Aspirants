@@ -23,20 +23,39 @@ const UserCard = ({ user }) => {
         sx={{ borderRadius: 1 }}
       />
       <CardContent>
-        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1e3c72" }}>
-          {user.username}
-        </Typography>
         <Typography variant="body2" color="text.secondary">
-          <b>Email:</b> {user.email}
+          <b>Program:</b>{" "}
+          {Array.isArray(user.program)
+            ? user.program.join(", ")
+            : user.program || "Not specified"}
         </Typography>
+
         <Typography variant="body2" color="text.secondary">
-          <b>Description:</b> {user.desc || "No description available"}
+          <b>University:</b>{" "}
+          {Array.isArray(user.university)
+            ? user.university.join(", ")
+            : user.university || "Not specified"}
         </Typography>
+
         <Typography variant="body2" color="text.secondary">
-          <b>Location:</b> {user.areas?.join(", ") || "Not specified"}
+          <b>Year of Study:</b>{" "}
+          {Array.isArray(user.yearOfStudy)
+            ? user.yearOfStudy.join(", ")
+            : user.yearOfStudy || "Not specified"}
         </Typography>
+
         <Typography variant="body2" color="text.secondary">
-          <b>Joined:</b> {getFormattedDate(user.createdAt)}
+          <b>Date of Birth:</b>{" "}
+          {Array.isArray(user.dob)
+            ? user.dob.join(", ")
+            : user.dob || "Not specified"}
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary">
+          <b>Contact:</b>{" "}
+          {Array.isArray(user.contactNo)
+            ? user.contactNo.join(", ")
+            : user.contactNo || "Not specified"}
         </Typography>
       </CardContent>
     </Card>

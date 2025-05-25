@@ -13,6 +13,7 @@ import {
   Button,
 } from "@mui/material";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 import ListingCard from "../../Components/Listings/ListingCard";
 
 const categories = [
@@ -24,44 +25,50 @@ const categories = [
 ];
 
 export default function ListingBrowsePage() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const urlCategory = queryParams.get("category");
+
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Filters & search state
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const [sortPrice, setSortPrice] = useState(""); // "asc" or "desc"
+  const [sortPrice, setSortPrice] = useState("");
+
+  // Sync category from URL on first load
+  useEffect(() => {
+    if (urlCategory) {
+      const matchedCategory = categories.find(
+        (cat) => cat.toLowerCase() === urlCategory.toLowerCase()
+      );
+      if (matchedCategory) {
+        setCategoryFilter(matchedCategory);
+      }
+    }
+  }, [urlCategory]);
 
   const fetchListings = async () => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser?._id) {
+      setError("User not logged in.");
+      setListings([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {
-      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-      if (!currentUser?._id) {
-        setError("User not logged in.");
-        setListings([]);
-        setLoading(false);
-        return;
-      }
-
-      // Build query params for API call
       const params = {};
 
-      if (searchTerm.trim() !== "") {
-        params.q = searchTerm.trim();
-      }
-      if (categoryFilter) {
-        params.category = categoryFilter;
-      }
-      if (minPrice !== "") {
-        params.minPrice = minPrice;
-      }
-      if (maxPrice !== "") {
-        params.maxPrice = maxPrice;
-      }
+      if (searchTerm.trim() !== "") params.q = searchTerm.trim();
+      if (categoryFilter) params.category = categoryFilter;
+      if (minPrice !== "") params.minPrice = minPrice;
+      if (maxPrice !== "") params.maxPrice = maxPrice;
 
       const { data } = await axios.get(
         `http://localhost:4000/listings/${currentUser._id}`,
@@ -70,7 +77,6 @@ export default function ListingBrowsePage() {
         }
       );
 
-      // Sort on frontend by price if needed
       let sortedData = data;
       if (sortPrice === "asc") {
         sortedData = [...data].sort((a, b) => a.price - b.price);
@@ -92,7 +98,6 @@ export default function ListingBrowsePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, categoryFilter, minPrice, maxPrice, sortPrice]);
 
-  // Reset filters
   const handleResetFilters = () => {
     setSearchTerm("");
     setCategoryFilter("");
@@ -107,7 +112,6 @@ export default function ListingBrowsePage() {
         Browse Listings
       </Typography>
 
-      {/* Filters & Search */}
       <Box
         component="form"
         sx={{
@@ -191,7 +195,6 @@ export default function ListingBrowsePage() {
         </Button>
       </Box>
 
-      {/* Listings */}
       {loading ? (
         <Box sx={{ textAlign: "center", mt: 6 }}>
           <CircularProgress />

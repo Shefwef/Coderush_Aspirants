@@ -31,8 +31,53 @@ const Communication = () => {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
   const [mapDialogOpen, setMapDialogOpen] = useState(false);
+  const [imageInput, setImageInput] = useState(null);
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+  // Handle sending image message
+  const handleSendImage = async () => {
+    if (!imageInput) {
+      alert("Please select an image first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", imageInput); // Append the selected image
+    formData.append("chatId", selectedChat.chatId); // Add chatId
+    formData.append("senderId", currentUser._id); // Add senderId
+    formData.append("content", "Shared an image"); // Add content text
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:4000/chats/messages/image",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData, // Send formData with image
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to send image");
+      }
+
+      const newMessage = await response.json();
+      setMessages((prev) => [...prev, newMessage]); // Update state with new message
+      setImageInput(null); // Reset image input state
+    } catch (error) {
+      console.error("Send Image Error:", error);
+      alert("Failed to send image. Please try again.");
+    }
+  };
+
+  // Handle image input change
+  const handleImageChange = (e) => {
+    setImageInput(e.target.files[0]);
+  };
 
   // Function to open map dialog
   const openMapDialog = () => setMapDialogOpen(true);
@@ -69,7 +114,7 @@ const Communication = () => {
         body: JSON.stringify({
           chatId: selectedChat.chatId,
           senderId: currentUser._id,
-          content: "Shared a meetup location", // <-- non-empty text to satisfy schema
+          content: "Shared a meetup location",
           location: location, // { lat, lng }
         }),
       });
@@ -306,7 +351,7 @@ const Communication = () => {
           variant="subtitle1"
           sx={{ fontWeight: "medium", color: "secondary.main", mb: 1 }}
         >
-          Chat with Donators
+          Chat with Buyers
         </Typography>
         <List sx={{ mb: 2 }}>
           {adopterChats.map((chat) => (
@@ -359,7 +404,7 @@ const Communication = () => {
           variant="subtitle1"
           sx={{ fontWeight: "medium", color: "secondary.main", mt: 2, mb: 1 }}
         >
-          Chat with Adopters
+          Chat with Sellers
         </Typography>
         <List>
           {adopteeChats.map((chat) => (
@@ -671,6 +716,16 @@ const Communication = () => {
                         </Typography>
                       )}
 
+                      {message.imageUrl && (
+                        <Box sx={{ mt: 1 }}>
+                          <img
+                            src={`http://localhost:4000${message.imageUrl}`}
+                            alt="shared image"
+                            style={{ maxWidth: "100%", borderRadius: "8px" }}
+                          />
+                        </Box>
+                      )}
+
                       {message.location &&
                         typeof message.location === "object" && (
                           <Box sx={{ mt: 1 }}>
@@ -797,6 +852,29 @@ const Communication = () => {
                 📍 Share Meetup Location
               </Button>
             </Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+                id="image-upload"
+              />
+              <label htmlFor="image-upload">
+                <Button variant="outlined" component="span" sx={{ mr: 2 }}>
+                  📸 Upload Image
+                </Button>
+              </label>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSendImage}
+                disabled={!imageInput} // Disable button if no image is selected
+              >
+                Send Image
+              </Button>
+            </Box>
+
             {/* Map Dialog */}
             <Dialog
               open={mapDialogOpen}
@@ -807,6 +885,7 @@ const Communication = () => {
               <DialogTitle>Select Meetup Location</DialogTitle>
               <DialogContent>
                 <CampusMap
+                  universityName="IUT"
                   onSelectLocation={(location) => {
                     handleSendLocation(location);
                     closeMapDialog();

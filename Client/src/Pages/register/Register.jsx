@@ -73,6 +73,17 @@ const Register = () => {
       const result = await signInWithPopup(auth, provider);
       const googleUser = result.user;
 
+      const allowedDomains = ["iut-dhaka.edu", "buet.ac.bd", "du.ac.bd"];
+      const emailDomain = googleUser.email.split("@")[1];
+
+      if (!allowedDomains.includes(emailDomain)) {
+        await auth.signOut();
+        alert(
+          "Only users with university emails from iut-dhaka.edu, buet.ac.bd, or du.ac.bd are allowed."
+        );
+        return;
+      }
+
       const res = await newRequest.post(
         "http://localhost:4000/auth/google-login",
         {

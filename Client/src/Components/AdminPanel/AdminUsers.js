@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Grid, CircularProgress, Box, Typography } from "@mui/material";
-import UserCard from "./UserCard"; // Import the UserCard component
+import UserCard from "./UserCard";
 
 const AdminUser = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch users data from the backend
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await fetch("http://localhost:4000/adminuser/all");
-
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }

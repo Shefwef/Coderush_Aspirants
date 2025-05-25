@@ -11,11 +11,11 @@ import {
 } from "@mui/material";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { Heart, HelpCircle, Home } from "lucide-react";
-import listProductsImage from "./images/product-image.png";
+import adoptPet from "./images/logo3.png";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const ListProductsSection = () => {
+const AdoptSection = () => {
   const [openSection, setOpenSection] = useState(null);
 
   const toggleSection = (section) => {
@@ -52,7 +52,7 @@ const ListProductsSection = () => {
             color: "#121858",
           }}
         >
-          List Your Products!
+          Adopt a Pet
         </Typography>
       </motion.div>
 
@@ -63,16 +63,16 @@ const ListProductsSection = () => {
         style={{ textAlign: "center", marginBottom: "1rem" }}
       >
         <img
-          src={listProductsImage}
+          src={adoptPet}
           sx={{
-            width: "100%",
-            maxWidth: "400px",
+            width: "5px",
             borderRadius: "5%",
             cursor: "pointer",
             objectFit: "cover",
+
             boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
           }}
-          alt="List Your Products"
+          alt="Happy Pet"
         />
       </motion.div>
 
@@ -85,16 +85,14 @@ const ListProductsSection = () => {
           variant="body1"
           sx={{ mb: 3, textAlign: "center", color: "#555" }}
         >
-          Selling your used products can be a great way to earn extra money,
-          help others, and give your items a second life. Whether you're a
-          student or just looking to declutter, listing your products can
-          benefit both you and potential buyers.
+          Discover the joys of adopting a pet with our dedicated program.
+          Embracing a pet into your home fills it with laughter and love.
         </Typography>
       </motion.div>
 
       {/* Questions Section */}
       <Grid container spacing={3}>
-        {/* Why Sell Your Old Products */}
+        {/* Why Adopt */}
         <Grid item xs={12} md={4}>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Card
@@ -112,34 +110,32 @@ const ListProductsSection = () => {
                     alignItems: "center",
                     cursor: "pointer",
                   }}
-                  onClick={() => toggleSection("whySell")}
+                  onClick={() => toggleSection("whyAdopt")}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Heart color="#121858" />
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      Why Sell Your Old Products?
+                      Why Adopt?
                     </Typography>
                   </Box>
                   <IconButton>
-                    {openSection === "whySell" ? (
+                    {openSection === "whyAdopt" ? (
                       <ExpandLess />
                     ) : (
                       <ExpandMore />
                     )}
                   </IconButton>
                 </Box>
-                <Collapse in={openSection === "whySell"}>
+                <Collapse in={openSection === "whyAdopt"}>
                   <Box sx={{ mt: 2, color: "#555" }}>
                     <ul>
+                      <li>Give a forever home to a pet that needs you</li>
                       <li>
-                        Provide affordable, reliable products for others who
-                        can't afford new items.
+                        Gain a loyal companion who will bring endless affection
                       </li>
                       <li>
-                        Help the environment by reducing waste and giving items
-                        a second life.
+                        Forge unforgettable bonds and make heartwarming memories
                       </li>
-                      <li>Earn extra money by selling unused products.</li>
                     </ul>
                   </Box>
                 </Collapse>
@@ -148,7 +144,7 @@ const ListProductsSection = () => {
           </motion.div>
         </Grid>
 
-        {/* How to List Your Products */}
+        {/* How to Adopt */}
         <Grid item xs={12} md={4}>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Card
@@ -166,30 +162,28 @@ const ListProductsSection = () => {
                     alignItems: "center",
                     cursor: "pointer",
                   }}
-                  onClick={() => toggleSection("howToList")}
+                  onClick={() => toggleSection("howToAdopt")}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <HelpCircle color="#121858" />
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      How to List Your Products
+                      How to Adopt
                     </Typography>
                   </Box>
                   <IconButton>
-                    {openSection === "howToList" ? (
+                    {openSection === "howToAdopt" ? (
                       <ExpandLess />
                     ) : (
                       <ExpandMore />
                     )}
                   </IconButton>
                 </Box>
-                <Collapse in={openSection === "howToList"}>
+                <Collapse in={openSection === "howToAdopt"}>
                   <Box sx={{ mt: 2, color: "#555" }}>
                     <ol>
-                      <li>Take clear photos of the product you're selling.</li>
-                      <li>Write a detailed and honest description.</li>
-                      <li>
-                        Set a reasonable price based on the product's condition.
-                      </li>
+                      <li>Submit your application for adoption</li>
+                      <li>Visit with your potential new companion</li>
+                      <li>Finalize the adoption with our support</li>
                     </ol>
                   </Box>
                 </Collapse>
@@ -198,7 +192,7 @@ const ListProductsSection = () => {
           </motion.div>
         </Grid>
 
-        {/* Benefits of Listing Used Products */}
+        {/* What It Means to Be a Pet Owner */}
         <Grid item xs={12} md={4}>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Card
@@ -216,29 +210,28 @@ const ListProductsSection = () => {
                     alignItems: "center",
                     cursor: "pointer",
                   }}
-                  onClick={() => toggleSection("productBenefits")}
+                  onClick={() => toggleSection("petOwner")}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Home color="#121858" />
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      Benefits of Listing Used Products
+                      What It Means to Be a Pet Owner
                     </Typography>
                   </Box>
                   <IconButton>
-                    {openSection === "productBenefits" ? (
+                    {openSection === "petOwner" ? (
                       <ExpandLess />
                     ) : (
                       <ExpandMore />
                     )}
                   </IconButton>
                 </Box>
-                <Collapse in={openSection === "productBenefits"}>
+                <Collapse in={openSection === "petOwner"}>
                   <Box sx={{ mt: 2, color: "#555" }}>
                     <Typography variant="body1">
-                      Listing your used products allows you to declutter your
-                      home, make extra money, and provide others with affordable
-                      products they may need. Plus, you can help the environment
-                      by promoting sustainability!
+                      Being a pet owner is a rewarding commitment that includes
+                      caring for your pet's everyday needs, such as nutrition,
+                      grooming, exercise, and health care.
                     </Typography>
                   </Box>
                 </Collapse>
@@ -248,36 +241,36 @@ const ListProductsSection = () => {
         </Grid>
       </Grid>
 
-      {/* Find Your Perfect Buyer Button */}
+      {/* Find Your Perfect Pet Button */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2 }}
         style={{ textAlign: "center", marginTop: "3rem" }}
       >
-        <Link to="/listings" style={{ textDecoration: "none" }}>
+        <Link to="/pets" style={{ textDecoration: "none" }}>
           <Button
             variant="contained"
             color="primary"
             size="large"
             onClick={scrollToTop}
             sx={{
-              padding: "12px 30px", 
+              padding: "12px 30px", // increased padding for a bigger button
               fontWeight: "bold",
-              fontSize: "1.1rem", 
-              background: "linear-gradient(45deg, #121858 30%, #474f97 90%)", 
-              borderRadius: "50px", 
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", 
-              textTransform: "none", 
-              transition: "all 0.3s ease", 
+              fontSize: "1.1rem", // slightly larger text
+              background: "linear-gradient(45deg, #121858 30%, #474f97 90%)", // gradient background
+              borderRadius: "50px", // fully rounded corners
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", // subtle shadow
+              textTransform: "none", // keeps the text uncapitalized
+              transition: "all 0.3s ease", // smooth transition for hover effects
               "&:hover": {
-                background: "linear-gradient(45deg, #474f97 30%, #121858 90%)", 
-                boxShadow: "0 6px 18px rgba(0, 0, 0, 0.2)", 
-                transform: "scale(1.05)", 
+                background: "linear-gradient(45deg, #474f97 30%, #121858 90%)", // hover gradient change
+                boxShadow: "0 6px 18px rgba(0, 0, 0, 0.2)", // stronger shadow on hover
+                transform: "scale(1.05)", // slight scale effect on hover
               },
             }}
           >
-            Find Your Perfect Buyer
+            Find Your Perfect Pet
           </Button>
         </Link>
       </motion.div>
@@ -285,4 +278,4 @@ const ListProductsSection = () => {
   );
 };
 
-export default ListProductsSection;
+export default AdoptSection;

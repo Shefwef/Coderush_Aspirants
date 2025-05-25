@@ -1,55 +1,120 @@
 import React from "react";
-import {
-  ShoppingCart,
-  MessageCircle,
-  MapPin,
-  ShieldCheck,
-  Settings,
-} from "lucide-react";
+import { Box, Typography } from "@mui/material";
+import HomeDarkCardLeftPic from "./images/HomeDarkCardLeftPic.jpeg";
+import HomeDarkCardRightPic from "./images/HomeDarkCardRightPic.jpeg";
 
-const features = [
-  {
-    Icon: ShoppingCart,
-    title: "Diverse Listings",
-    desc: "Post items, services or tutoring with flexible pricing.",
-  },
-  {
-    Icon: MessageCircle,
-    title: "Real-Time Chat",
-    desc: "Negotiate and share extra photos in-app.",
-  },
-  {
-    Icon: MapPin,
-    title: "Safe Meetups",
-    desc: "Pin campus landmarks for public exchanges.",
-  },
-  {
-    Icon: ShieldCheck,
-    title: "Community Moderation",
-    desc: "Student-admins approve listings and enforce rules.",
-  },
-  {
-    Icon: Settings,
-    title: "AI Price Advisor",
-    desc: "Data-backed price suggestions for your listings.",
-  },
-];
-
-export default function CardBelowHome() {
+const CardBelowHome = () => {
   return (
-    <section className="bg-gray-50 py-16">
-      <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
-        {features.map(({ Icon, title, desc }) => (
-          <div
-            key={title}
-            className="bg-white p-6 rounded-xl shadow hover:shadow-md transition"
+    <Box
+      sx={{
+        justifyContent: "center",
+        maxWidth: "100%",
+        backgroundColor: "rgb(20, 20, 81)",
+        width: "80%",
+        minheight: "50vh",
+        margin: "auto",
+        padding: "10px",
+        marginTop: "30px",
+        borderRadius: "40px 50px 20px 20px",
+        display: "flex",
+
+        alignItems: "center",
+        color: "aliceblue",
+      }}
+    >
+      {/* Left Image (corresponds to .left-pic) */}
+      <Box
+        sx={{
+          position: "relative",
+          bottom: "50px",
+          width: "16vw",
+        }}
+      >
+        <Box
+          component="img"
+          src={HomeDarkCardLeftPic}
+          alt="Playful cat"
+          sx={{
+            height: 220,
+            marginLeft: "30px",
+          }}
+        />
+      </Box>
+
+      {/* Middle Text (corresponds to .right-para / .we-do) */}
+      <Box
+        sx={{
+          minwidth: "flex",
+          ml: 1,
+
+          // If you had a custom CSS variable for --textGrey, replace it with your desired color
+          color: "var(--textGrey)",
+
+          paddingRight: "30px",
+          paddingLeft: "150px",
+        }}
+      >
+        <Box
+          sx={{
+            minwidth: "flex",
+            ml: 1,
+
+            // If you had a custom CSS variable for --textGrey, replace it with your desired color
+            color: "var(--textGrey)",
+            fontSize: "22px",
+            fontWeight: 500,
+            fontFamily: '"Montserrat", sans-serif',
+            lineHeight: 1.2,
+            textAlign: "left",
+            paddingRight: "30px",
+            paddingLeft: "10px",
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: "28px",
+              fontWeight: 500,
+              color: "#ffffff", // or "aliceblue"
+              marginBottom: "10px",
+            }}
           >
-            <Icon size={32} className="text-indigo-600 mb-4" />
-            <h3 className="font-semibold mb-2">{title}</h3>
-            <p className="text-gray-600 text-sm">{desc}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+            OUR MISSION
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            minwidth: "flex",
+            ml: 1,
+
+            // If you had a custom CSS variable for --textGrey, replace it with your desired color
+            color: "var(--textGrey)",
+            fontSize: "22px",
+            fontWeight: 500,
+            fontFamily: '"Montserrat", sans-serif',
+            lineHeight: 1.2,
+            textAlign: "left",
+            paddingRight: "30px",
+            paddingLeft: "10px",
+          }}
+        >
+          We specialize in connecting the perfect pet with their forever home,
+          ensuring a seamless adoption process to spread joy and cultivate love.
+        </Box>
+      </Box>
+      {/* Right Image (corresponds to .right-pic) */}
+      <Box
+        sx={{
+          "& img": {
+            height: "200px",
+            position: "relative",
+            bottom: "15px",
+          },
+        }}
+      >
+        <img src={HomeDarkCardRightPic} alt="Happy rabbit" />
+      </Box>
+    </Box>
   );
-}
+};
+
+export default CardBelowHome;
