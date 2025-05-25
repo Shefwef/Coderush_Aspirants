@@ -21,7 +21,7 @@ import {
 import BlockIcon from "@mui/icons-material/Block";
 import CloseOutlinedIcon from "@mui/icons-material/Close";
 import ProfileModal from "./ProfileModal";
-import ArchivedChats from "./ArchivedChats";
+
 import axios from "axios";
 
 const Communication = () => {
