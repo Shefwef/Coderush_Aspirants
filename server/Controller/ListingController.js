@@ -27,12 +27,12 @@ exports.predictPriceWithGroq = async (req, res) => {
           content: [
             {
               type: "text",
-              text: `Predict price based on category: ${category} and condition: ${condition}.`,
+              text: `Predict price based on category: ${category} and condition: ${condition}. Just return a number`,
             },
           ],
         },
       ],
-      model: "llama-3.2-90b-vision-preview",
+      model: "llama-3.3-70b-versatile",
       temperature: 1,
       max_completion_tokens: 1024,
       top_p: 1,
@@ -128,17 +128,18 @@ exports.getListingById = async (req, res) => {
 };
 
 // READ all
-// READ all listings - simple version (no filters)
+
 exports.getListings = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const { q, category, minPrice, maxPrice } = req.query;
+    const { userId } = req.params; // Get the userId from the URL
+    const { q, category, minPrice, maxPrice } = req.query; // Get the query parameters
 
-    // Find user to get university
-    const user = await User.findById(userId).select("university");
+    // Find user to get university and email
+    const user = await User.findById(userId).select("university email");
     if (!user) return res.status(404).json({ message: "User not found." });
 
     const userUniversity = user.university;
+    const userEmail = user.email; // Extract the user's email
 
     // Build filters
     const filter = {
@@ -148,28 +149,30 @@ exports.getListings = async (req, res) => {
       ],
     };
 
+    // Exclude listings where the seller's email matches the user's email
+    filter.$and = filter.$and || [];
+    filter.$and.push({ sellerEmail: { $ne: userEmail } }); // Exclude listings with the user's email as the seller's email
+
+    // Apply search, category, min/max price filters
     if (q) {
-      filter.$and = filter.$and || [];
       filter.$and.push({
         $or: [{ title: new RegExp(q, "i") }, { category: new RegExp(q, "i") }],
       });
     }
 
     if (category) {
-      filter.$and = filter.$and || [];
       filter.$and.push({ category });
     }
 
     if (minPrice) {
-      filter.$and = filter.$and || [];
       filter.$and.push({ price: { $gte: Number(minPrice) } });
     }
 
     if (maxPrice) {
-      filter.$and = filter.$and || [];
       filter.$and.push({ price: { $lte: Number(maxPrice) } });
     }
 
+    // Find listings based on the filter
     const listings = await Listing.find(filter)
       .sort({ createdAt: -1 })
       .populate("offers.user", "username email");
@@ -276,5 +279,57 @@ exports.changeStatus = async (req, res) => {
     res.json(listing);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+const Chat = require("../Model/Chat");
+exports.createChat = async (req, res) => {
+  try {
+    const { userId } = req.params; // Extract the current user's ID (buyer) from the URL
+    const { listingId, status } = req.body; // Extract listingId and status from the request body
+
+    // Find the current user (buyer) using userId from the URL
+    const currentUser = await User.findById(userId);
+    if (!currentUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the listing using the listingId from the body
+    const listing = await Listing.findById(listingId);
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    // Get the seller's email from the listing
+    const sellerEmail = listing.seller; // The seller's email is stored in the listing
+
+    // Find the seller's user ID using the sellerEmail
+    const seller = await User.findOne({ email: sellerEmail });
+    if (!seller) {
+      return res.status(404).json({ error: "Seller not found" });
+    }
+
+    // Create a new chat between the buyer and the seller
+    const chat = new Chat({
+      buyerId: currentUser._id, // Set the buyer's ID
+      sellerId: seller._id, // Set the seller's ID
+      productId: listing._id, // Set the listing's ID as the productId
+      status: status, // Set the chat's status (active, etc.)
+    });
+
+    await chat.save(); // Save the chat to the database
+
+    // Respond with the created chat details
+    res.status(200).json({
+      chat: {
+        _id: chat._id,
+        buyerId: chat.buyerId,
+        sellerId: chat.sellerId,
+        productId: chat.productId,
+        status: chat.status,
+      },
+    });
+  } catch (err) {
+    console.error("❌ createChat error:", err);
+    res.status(500).json({ error: "Error creating chat." });
   }
 };
