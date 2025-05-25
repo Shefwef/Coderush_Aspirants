@@ -24,7 +24,7 @@ const sendMessage = async (req, res) => {
       chatId,
       senderId,
       content: messageContent,
-      location: location || null,
+      location,
     });
 
     await message.save();
